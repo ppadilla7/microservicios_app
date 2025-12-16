@@ -1,0 +1,55 @@
+# OS / Editor artifacts
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+notifications.log
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# .NET build artifacts
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+artifacts/
+TestResults/
+project.lock.json
+ScaffoldingReadMe.txt
+*.user
+*.rsuser
+*.suo
+*.userosscache
+
+# Visual Studio
+.vs/
+
+# JetBrains / Rider
+.idea/
+*.sln.iml
+
+# NuGet packages
+*.nupkg
+packages/
+
+# Publish output
+publish/
+
+# Node / Vite (client)
+client/node_modules/
+client/dist/
+client/.env
+client/.env.*
+client/.DS_Store
+
+# NPM/Yarn/PNPM debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# VS Code
+.vscode/

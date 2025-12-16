@@ -1,0 +1,17 @@
+# Global ignore for Docker contexts
+**/node_modules
+**/dist
+**/bin
+**/obj
+**/.git
+**/.vscode
+**/.DS_Store
+**/npm-debug.log*
+**/yarn.lock
+**/package-lock.json
+# Allow client lockfile for Docker build
+!client/package-lock.json
+
+# Build outputs
+**/*.user
+**/*.suo

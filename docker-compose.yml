@@ -1,0 +1,220 @@
+version: "3.9"
+
+services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: security_sql
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=Your_password123
+    ports:
+      - "1433:1433"
+    profiles:
+      - sqlserver
+
+  postgres:
+    image: postgres:16
+    container_name: postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=universitydb
+    ports:
+      - "5432:5432"
+
+  security:
+    build:
+      context: .
+      dockerfile: services/Security/Security.Api/Dockerfile
+    container_name: security_api
+    environment:
+      - ASPNETCORE_URLS=http://0.0.0.0:5096
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__Default=Server=db;Database=securitydb;User Id=sa;Password=Your_password123;TrustServerCertificate=True
+      - ConnectionStrings__Postgres=Host=postgres;Database=universitydb;Username=postgres;Password=postgres
+      - DB_PROVIDER=${DB_PROVIDER:-Postgres}
+      - Jwt__Issuer=Security.Api
+      - Jwt__Audience=SecurityClient
+      - Jwt__Secret=T4oLPfSv71msJl5s0RU9Sv8QbD5UCbwFPdGSEhXbYn0=
+      - RabbitMQ__HostName=rabbitmq
+      - RabbitMQ__Port=5672
+      - RabbitMQ__UserName=guest
+      - RabbitMQ__Password=guest
+      - Kafka__BootstrapServers=kafka:9092
+    depends_on:
+      postgres:
+        condition: service_started
+      rabbitmq:
+        condition: service_started
+      kafka:
+        condition: service_started
+    ports:
+      - "5096:5096"
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.6.1
+    container_name: zookeeper
+    environment:
+      - ZOOKEEPER_CLIENT_PORT=2181
+      - ZOOKEEPER_TICK_TIME=2000
+    ports:
+      - "2181:2181"
+
+  kafka:
+    image: confluentinc/cp-kafka:7.6.1
+    container_name: kafka
+    environment:
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_BROKER_ID=1
+      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      - KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:9092
+      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka_ui
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=local
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092
+      - KAFKA_CLUSTERS_0_ZOOKEEPER=zookeeper:2181
+    depends_on:
+      - kafka
+      - zookeeper
+    ports:
+      - "8082:8080"
+
+  students:
+    build:
+      context: .
+      dockerfile: services/Students/Students.Api/Dockerfile
+    container_name: students_api
+    environment:
+      - ASPNETCORE_URLS=http://0.0.0.0:5084
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__Default=Server=db;Database=studentsdb;User Id=sa;Password=Your_password123;TrustServerCertificate=True
+      - ConnectionStrings__Postgres=Host=postgres;Database=universitydb;Username=postgres;Password=postgres
+      - DB_PROVIDER=${DB_PROVIDER:-Postgres}
+      - Jwt__Issuer=Security.Api
+      - Jwt__Audience=StudentsClient
+      - Jwt__Secret=T4oLPfSv71msJl5s0RU9Sv8QbD5UCbwFPdGSEhXbYn0=
+      - RabbitMQ__HostName=rabbitmq
+      - RabbitMQ__Port=5672
+      - RabbitMQ__UserName=guest
+      - RabbitMQ__Password=guest
+      - Kafka__BootstrapServers=kafka:9092
+    depends_on:
+      postgres:
+        condition: service_started
+      rabbitmq:
+        condition: service_started
+      kafka:
+        condition: service_started
+    ports:
+      - "5084:5084"
+
+  courses:
+    build:
+      context: .
+      dockerfile: services/Courses/Courses.Api/Dockerfile
+    container_name: courses_api
+    environment:
+      - ASPNETCORE_URLS=http://0.0.0.0:5202
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__Default=Server=db;Database=coursesdb;User Id=sa;Password=Your_password123;TrustServerCertificate=True
+      - ConnectionStrings__Postgres=Host=postgres;Database=universitydb;Username=postgres;Password=postgres
+      - DB_PROVIDER=${DB_PROVIDER:-Postgres}
+      - Jwt__Issuer=Security.Api
+      - Jwt__Audience=CoursesClient
+      - Jwt__Secret=T4oLPfSv71msJl5s0RU9Sv8QbD5UCbwFPdGSEhXbYn0=
+      - RabbitMQ__HostName=rabbitmq
+      - RabbitMQ__Port=5672
+      - RabbitMQ__UserName=guest
+      - RabbitMQ__Password=guest
+      - Kafka__BootstrapServers=kafka:9092
+    depends_on:
+      postgres:
+        condition: service_started
+      rabbitmq:
+        condition: service_started
+      kafka:
+        condition: service_started
+    ports:
+      - "5202:5202"
+
+  enrollment:
+    build:
+      context: .
+      dockerfile: services/Enrollment/Enrollment.Api/Dockerfile
+    container_name: enrollment_api
+    environment:
+      - ASPNETCORE_URLS=http://0.0.0.0:5281
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__Default=Server=db;Database=enrollmentdb;User Id=sa;Password=Your_password123;TrustServerCertificate=True
+      - ConnectionStrings__Postgres=Host=postgres;Database=universitydb;Username=postgres;Password=postgres
+      - DB_PROVIDER=${DB_PROVIDER:-Postgres}
+      - Jwt__Issuer=Security.Api
+      - Jwt__Audience=EnrollmentClient
+      - Jwt__Secret=T4oLPfSv71msJl5s0RU9Sv8QbD5UCbwFPdGSEhXbYn0=
+      - RabbitMQ__HostName=rabbitmq
+      - RabbitMQ__Port=5672
+      - RabbitMQ__UserName=guest
+      - RabbitMQ__Password=guest
+      - Kafka__BootstrapServers=kafka:9092
+    depends_on:
+      postgres:
+        condition: service_started
+      rabbitmq:
+        condition: service_started
+      kafka:
+        condition: service_started
+    ports:
+      - "5281:5281"
+
+  notifications:
+    build:
+      context: .
+      dockerfile: services/Notifications/Notifications.Api/Dockerfile
+    container_name: notifications_api
+    environment:
+      - ASPNETCORE_URLS=http://0.0.0.0:5291
+      - ASPNETCORE_ENVIRONMENT=Development
+      - RabbitMQ__HostName=rabbitmq
+      - RabbitMQ__Port=5672
+      - RabbitMQ__UserName=guest
+      - RabbitMQ__Password=guest
+      - Mailtrap__Host=sandbox.smtp.mailtrap.io
+      - Mailtrap__Port=587
+      - Mailtrap__User=${MAILTRAP_USER}
+      - Mailtrap__Password=${MAILTRAP_PASS}
+      - Mailtrap__FromEmail=no-reply@example.com
+      - Mailtrap__FromName=University Notifications
+    depends_on:
+      rabbitmq:
+        condition: service_started
+    ports:
+      - "5291:5291"
+
+  client:
+    build:
+      context: .
+      dockerfile: client/Dockerfile
+    container_name: security_client
+    ports:
+      - "8081:80"
+    depends_on:
+      - security
