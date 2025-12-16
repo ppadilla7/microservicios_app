@@ -8,8 +8,10 @@ COPY ["services/Courses/Courses.Application/Courses.Application.csproj", "servic
 COPY ["services/Courses/Courses.Infrastructure/Courses.Infrastructure.csproj", "services/Courses/Courses.Infrastructure/"]
 COPY ["services/Courses/Courses.Domain/Courses.Domain.csproj", "services/Courses/Courses.Domain/"]
 COPY ["services/BuildingBlocks/BuildingBlocks.csproj", "services/BuildingBlocks/"]
+# Ensure custom NuGet sources/config are available during restore
+COPY ["NuGet.Config", "."]
 
-RUN dotnet restore "services/Courses/Courses.Api/Courses.Api.csproj"
+RUN dotnet restore "services/Courses/Courses.Api/Courses.Api.csproj" --disable-parallel --verbosity minimal
 
 # Copy the rest of the source code
 COPY . .
