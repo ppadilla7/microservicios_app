@@ -11,7 +11,7 @@ COPY ["services/BuildingBlocks/BuildingBlocks.csproj", "services/BuildingBlocks/
 # Ensure custom NuGet sources/config are available during restore
 COPY ["NuGet.Config", "."]
 
-RUN dotnet restore "services/Courses/Courses.Api/Courses.Api.csproj" --disable-parallel --verbosity minimal
+RUN dotnet restore "services/Courses/Courses.Api/Courses.Api.csproj" --disable-parallel --verbosity detailed --source https://api.nuget.org/v3/index.json
 
 # Copy the rest of the source code
 COPY . .
