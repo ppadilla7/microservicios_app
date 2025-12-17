@@ -1,4 +1,6 @@
-export const API_BASE = 'http://localhost:5096'
+// Security API configurable vía Vite con fallback al hostname
+const HOST = typeof window !== 'undefined' ? window.location.hostname : 'localhost'
+export const API_BASE = (import.meta?.env?.VITE_SECURITY_API) || `http://${HOST}:5096`
 
 export function authHeaders() {
   const t = localStorage.getItem('token') || ''

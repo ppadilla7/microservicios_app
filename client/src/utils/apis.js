@@ -1,6 +1,8 @@
-export const COURSES_API = 'http://localhost:5202'
-export const ENROLLMENTS_API = 'http://localhost:5281'
-export const STUDENTS_API = 'http://localhost:5084'
+// Endpoints configurables vía variables de entorno Vite con fallback al hostname
+const HOST = typeof window !== 'undefined' ? window.location.hostname : 'localhost'
+export const COURSES_API = (import.meta?.env?.VITE_COURSES_API) || `http://${HOST}:5202`
+export const ENROLLMENTS_API = (import.meta?.env?.VITE_ENROLLMENT_API) || `http://${HOST}:5281`
+export const STUDENTS_API = (import.meta?.env?.VITE_STUDENTS_API) || `http://${HOST}:5084`
 
 export async function getCourses() {
   const res = await fetch(`${COURSES_API}/api/Courses`)
