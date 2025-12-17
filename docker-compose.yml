@@ -30,7 +30,7 @@ services:
     environment:
       - ASPNETCORE_URLS=http://0.0.0.0:5096
       - ASPNETCORE_ENVIRONMENT=Development
-      - CORS_ORIGINS=http://98.93.180.181:8081
+      - CORS_ORIGINS=http://98.93.180.181:8081,https://unitest.store
       - ConnectionStrings__Default=Server=db;Database=securitydb;User Id=sa;Password=Your_password123;TrustServerCertificate=True
       - ConnectionStrings__Postgres=Host=postgres;Database=universitydb;Username=postgres;Password=postgres
       - DB_PROVIDER=${DB_PROVIDER:-Postgres}
@@ -107,7 +107,7 @@ services:
     environment:
       - ASPNETCORE_URLS=http://0.0.0.0:5084
       - ASPNETCORE_ENVIRONMENT=Development
-      - CORS_ORIGINS=http://98.93.180.181:8081
+      - CORS_ORIGINS=http://98.93.180.181:8081,https://unitest.store
       - ConnectionStrings__Default=Server=db;Database=studentsdb;User Id=sa;Password=Your_password123;TrustServerCertificate=True
       - ConnectionStrings__Postgres=Host=postgres;Database=universitydb;Username=postgres;Password=postgres
       - DB_PROVIDER=${DB_PROVIDER:-Postgres}
@@ -137,7 +137,7 @@ services:
     environment:
       - ASPNETCORE_URLS=http://0.0.0.0:5202
       - ASPNETCORE_ENVIRONMENT=Development
-      - CORS_ORIGINS=http://98.93.180.181:8081
+      - CORS_ORIGINS=http://98.93.180.181:8081,https://unitest.store
       - ConnectionStrings__Default=Server=db;Database=coursesdb;User Id=sa;Password=Your_password123;TrustServerCertificate=True
       - ConnectionStrings__Postgres=Host=postgres;Database=universitydb;Username=postgres;Password=postgres
       - DB_PROVIDER=${DB_PROVIDER:-Postgres}
@@ -167,7 +167,7 @@ services:
     environment:
       - ASPNETCORE_URLS=http://0.0.0.0:5281
       - ASPNETCORE_ENVIRONMENT=Development
-      - CORS_ORIGINS=http://98.93.180.181:8081
+      - CORS_ORIGINS=http://98.93.180.181:8081,https://unitest.store
       - ConnectionStrings__Default=Server=db;Database=enrollmentdb;User Id=sa;Password=Your_password123;TrustServerCertificate=True
       - ConnectionStrings__Postgres=Host=postgres;Database=universitydb;Username=postgres;Password=postgres
       - DB_PROVIDER=${DB_PROVIDER:-Postgres}
