@@ -78,24 +78,22 @@ builder.Services.AddAuthentication(options =>
     });
 
 builder.Services.AddAuthorization();
-// CORS
+// CORS: permitir orígenes por defecto y adicionales vía variable CORS_ORIGINS
+var defaultCorsOrigins = new[]
+{
+    "http://localhost:5173","http://localhost:5174","http://localhost:5175","http://localhost:5176",
+    "http://127.0.0.1:5173","http://127.0.0.1:5174","http://127.0.0.1:5175","http://127.0.0.1:5176",
+    "http://localhost:8080","http://127.0.0.1:8080","http://localhost:8081","http://127.0.0.1:8081"
+};
+var extraCorsOriginsRaw = builder.Configuration["CORS_ORIGINS"] ?? string.Empty;
+var extraCorsOrigins = extraCorsOriginsRaw
+    .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+var allowedCorsOrigins = defaultCorsOrigins.Concat(extraCorsOrigins).Distinct().ToArray();
+
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
-        policy.WithOrigins(
-                "http://localhost:5173",
-                "http://localhost:5174",
-                "http://localhost:5175",
-                "http://localhost:5176",
-                "http://127.0.0.1:5173",
-                "http://127.0.0.1:5174",
-                "http://127.0.0.1:5175",
-                "http://127.0.0.1:5176",
-                "http://localhost:8080",
-                "http://127.0.0.1:8080",
-                "http://localhost:8081",
-                "http://127.0.0.1:8081"
-            )
+        policy.WithOrigins(allowedCorsOrigins)
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials());
