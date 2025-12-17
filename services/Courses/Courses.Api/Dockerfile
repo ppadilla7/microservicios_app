@@ -1,6 +1,8 @@
+# syntax=docker/dockerfile:1.4
 ## Multi-stage Dockerfile for Courses.Api (NET 8)
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
+ENV NUGET_PACKAGES=/root/.nuget/packages
 
 # Copy project files for efficient restore
 COPY ["services/Courses/Courses.Api/Courses.Api.csproj", "services/Courses/Courses.Api/"]
@@ -11,14 +13,17 @@ COPY ["services/BuildingBlocks/BuildingBlocks.csproj", "services/BuildingBlocks/
 # Ensure custom NuGet sources/config are available during restore
 COPY ["NuGet.Config", "."]
 
-RUN dotnet restore "services/Courses/Courses.Api/Courses.Api.csproj" --disable-parallel --verbosity detailed --source https://api.nuget.org/v3/index.json
+RUN --mount=type=cache,target=/root/.nuget/packages \
+    dotnet restore "services/Courses/Courses.Api/Courses.Api.csproj" \
+    --disable-parallel --verbosity minimal \
+    --source https://api.nuget.org/v3/index.json
 
 # Copy the rest of the source code
 COPY . .
 WORKDIR "/src/services/Courses/Courses.Api"
 
 # Publish
-RUN dotnet publish "Courses.Api.csproj" -c Release -o /app/publish
+RUN dotnet publish "Courses.Api.csproj" -c Release -o /app/publish --no-restore
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
